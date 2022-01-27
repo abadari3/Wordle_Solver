@@ -10,17 +10,24 @@ hints = {
 }
 
 def condition(w, hints):
+    valid = []
     for fixed in hints["fixed"]:
         c, l = fixed
         if w[l] != c:
             return False
+        else:
+            valid.append(c)
     for wrong in hints["wrong"]:
         if wrong in w:
             return False
+        
     for var in hints["present"]:
         c, l = var
-        if w[l] == c:
-            return False
+        if c in w:
+            valid.append(c)
+    
+    if tried != valid:
+        return False
     return True
 
 def gather_info():
@@ -58,6 +65,7 @@ def gather_info():
             best_guess = word
     return best_guess
 
+tried = []
 def guess():
     word = input("word: ")
     present = [p.strip() for p in input("present: ").split(",") if p.strip() != '']
@@ -68,10 +76,13 @@ def guess():
             hints['wrong'].append(c)
         elif c in fixed:
             hints['fixed'].append((c, i))
+            tried.append(c)
         elif c in present:
             hints['present'].append((c, i))
+            tried.append(c)
     possible_guesses = [w for w in possible_words if condition(w, hints)]
     print("possible solutions are", possible_guesses)
+    print()
     if len(possible_guesses) > 1:
         print("the best word to gather information is", gather_info())
         
